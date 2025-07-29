@@ -1,6 +1,8 @@
 import data
 import dbMethods as db
 import os
+import tkinter as tk
+import navPanelMethods as nav
 
 if __name__ == '__main__':
 
@@ -17,10 +19,22 @@ if __name__ == '__main__':
         db.close_connection(connection)
     
 
-    conn = db.create_connection(data.UserLocalAppdata.DBFILE.value)
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM species")
-    rows = cursor.fetchall()
-    for row in rows:
-        print(row)
-    db.close_connection(conn)
+# Initialize the main application window
+root = tk.Tk()
+root.title("My Bug Log")
+root.config(bg="#D3D3D3")
+root.geometry("800x800")  # Set a default size
+#root.state('zoomed')
+
+# Nav Frame
+navFrame = tk.Frame(root, relief=tk.RAISED, bd = 2, bg=data.Colors.NAVIGATION.value, width=210)
+navFrame.pack(side=tk.LEFT, fill=tk.BOTH)
+nav.navGeneral(navFrame) # Initialize navigation panel to default state
+
+# Main Frame
+mainFrame = tk.Frame(root, bg=data.Colors.MAIN.value, width=590)
+mainFrame.pack(side=tk.LEFT, fill=tk.BOTH)
+
+
+# Start the main event loop
+root.mainloop()

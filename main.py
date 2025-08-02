@@ -3,6 +3,7 @@ import dbMethods as db
 import os
 import tkinter as tk
 import navPanelMethods as nav
+import mainPanelMethods as mainPanel
 
 if __name__ == '__main__':
 
@@ -29,12 +30,13 @@ root.geometry("800x800")  # Set a default size
 # Nav Frame
 navFrame = tk.Frame(root, relief=tk.RAISED, bd = 2, bg=data.Colors.NAVIGATION.value, width=210)
 navFrame.pack(side=tk.LEFT, fill=tk.BOTH)
-nav.navGeneral(navFrame) # Initialize navigation panel to default state
 
 # Main Frame
 mainFrame = tk.Frame(root, bg=data.Colors.MAIN.value, width=590)
 mainFrame.pack(side=tk.LEFT, fill=tk.BOTH)
 
+# Initialize navigation panel
+nav.navGeneral(navFrame, mainFrame) # Initialize navigation panel to default state
 
 # Start the main event loop
 root.mainloop()

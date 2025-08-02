@@ -1,4 +1,5 @@
 import sqlite3
+import data
 # dbMethods.py
 # This module contains methods for database operations.
 
@@ -29,22 +30,60 @@ def close_connection(conn):
         conn.close()
         print("Connection closed.")
 
-def addSpecies(conn, added):
-    """Add a new species to the database.
+def addSpecies(species):
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    if conn:
+        try:
+            cursor = conn.cursor()
+            sql = '''INSERT INTO species(species, morph, scientific_name, image)
+                     VALUES(?, ?, ?, ?)'''
+            cursor.execute(sql, species)
+            conn.commit()
+            print("Species added successfully.")
+        except sqlite3.Error as e:
+            print(f"Error adding species: {e}")
+        finally:
+            close_connection(conn)
+
+def getSpecies():
+    """Retrieve all species from the database.
+
+    Returns:
+        list: A list of tuples containing species names.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    species_names = []
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT species FROM species")
+            species_names = cursor.fetchall()
+            print("Species retrieved successfully.")
+        except sqlite3.Error as e:
+            print(f"Error retrieving species: {e}")
+        finally:
+            close_connection(conn)
+    return species_names
+
+def addBug(added):
+    """Add a new bug to the database.
 
     Args:
-        conn (Connection): The database connection object.
-        added (tuple): A tuple containing species data (species, morph, scientific_name, image).
+        added (tuple): A tuple containing bug data (date_found, species_name, source, humidity, temperature).
     """
-    try:
-        cursor = conn.cursor()
-        sql = '''INSERT INTO species(species, morph, scientific_name, image)
-                 VALUES(?, ?, ?, ?)'''
-        cursor.execute(sql, added)
-        conn.commit()
-        print("Species added successfully.")
-    except sqlite3.Error as e:
-        print(f"Error adding species: {e}")
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    if conn:
+        try:
+            cursor = conn.cursor()
+            sql = '''INSERT INTO bugs(date_found, species_name, source, humidity, temperature)
+                     VALUES(?, ?, ?, ?, ?)'''
+            cursor.execute(sql, added)
+            conn.commit()
+            print("Bug added successfully.")
+        except sqlite3.Error as e:
+            print(f"Error adding bug: {e}")
+        finally:
+            close_connection(conn)
 
 def create_tables(conn):
     """Create necessary tables in the database.

@@ -1,8 +1,9 @@
 import tkinter as tk
 import data
+import mainPanelMethods as mainPanel
 
 
-def navGeneral(frame):
+def navGeneral(frame, mainFrame):
     """Handle general navigation actions.
 
     Args:
@@ -17,12 +18,12 @@ def navGeneral(frame):
     navLabel = tk.Label(frame, text="Navigation", bg=data.Colors.NAVIGATION.value, fg="black", font=("Arial", 16))
     navLabel.place(relx=0.03, rely=0.05)
 
-    # Buttons
+    # Buttons for main navigation
     speciesDB = tk.Button(frame, text="Species DB", command=lambda: print("Species DB Clicked"))
     speciesDB.config(bg = data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, anchor = "w", width=20, height=2)
     speciesDB.place(relx=0.035, rely=0.1)
 
-    addBug = tk.Button(frame, text="Add Bug", command=lambda: print("Add Bug Clicked"))
+    addBug = tk.Button(frame, text="Add Bug", command=lambda: mainPanel.mainAddBug(mainFrame))
     addBug.config(bg = data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, anchor = "w", width=20, height=2)
     addBug.place(relx=0.035, rely=0.17)
 

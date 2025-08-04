@@ -3,6 +3,25 @@ import data
 import dbMethods as db
 from tkcalendar import Calendar, DateEntry 
 
+def mainPanelDefault(frame):
+    """Handle default main panel display.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+    """
+
+    # Clear the frame
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+    # Top Label
+    mainLabel = tk.Label(frame, text="Welcome to My Bug Log", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
+    mainLabel.place(relx=0.03, rely=0.05)
+
+    # Description Label
+    descriptionLabel = tk.Label(frame, text="Use the navigation panel to get started.", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
+    descriptionLabel.place(relx=0.03, rely=0.1)
+
 def mainAddBug(frame):
     """Handle Add Bug operation.
 
@@ -70,6 +89,7 @@ def mainAddBug(frame):
     # Add Bug Button, uses method from dbMethods to add the bug
     addBugButton = tk.Button(frame, text="Add Bug", command=lambda: db.addBug(
         (
+            nicknameEntry.get(),
             dateAcquiredEntry.get(),
             speciesEntry.get(),
             sourceEntry.get(),

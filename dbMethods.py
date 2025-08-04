@@ -3,6 +3,23 @@ import data
 # dbMethods.py
 # This module contains methods for database operations.
 
+
+def printBugs():
+    """Print all bugs in the database.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM bugs")
+            rows = cursor.fetchall()
+            for row in rows:
+                print(row)
+        except sqlite3.Error as e:
+            print(f"Error retrieving bugs: {e}")
+        finally:
+            close_connection(conn)
+
 def create_connection(dbFile):
     """Create a database connection to the SQLite database specified by dbFile.
 
@@ -75,8 +92,8 @@ def addBug(added):
     if conn:
         try:
             cursor = conn.cursor()
-            sql = '''INSERT INTO bugs(date_found, species_name, source, humidity, temperature)
-                     VALUES(?, ?, ?, ?, ?)'''
+            sql = '''INSERT INTO bugs(nickname, date_found, species_name, source, humidity, temperature)
+                     VALUES(?, ?, ?, ?, ?, ?)'''
             cursor.execute(sql, added)
             conn.commit()
             print("Bug added successfully.")
@@ -104,6 +121,7 @@ def create_tables(conn):
 
             """CREATE TABLE IF NOT EXISTS bugs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nickname TEXT NOT NULL,
                 date_found DATE NOT NULL,
                 species_name TEXT,
                 source TEXT NOT NULL,

@@ -41,10 +41,5 @@ nav.navGeneral(navFrame, mainFrame) # Initialize navigation panel to default sta
 # Initialize main panel
 mainPanel.mainPanelDefault(mainFrame)  # Initialize main panel to default state
 
-# add bug
-db.addBug(('Test Bug', '2023-10-01', 'NULL', 'Test Source', 50, 25))  # Example bug data
-
-db.printBugs()  # Print all bugs in the database for debugging
-
 # Start the main event loop
 root.mainloop()

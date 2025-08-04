@@ -9,7 +9,6 @@ def mainPanelDefault(frame):
     Args:
         frame (tk.Frame): The tkinter frame to display the main panel.
     """
-
     # Clear the frame
     for widget in frame.winfo_children():
         widget.destroy()
@@ -58,7 +57,7 @@ def mainAddBug(frame):
 
     speciesEntry = tk.StringVar(frame)
     speciesEntry.set("Select Species")
-    speciesDropdown = tk.OptionMenu(frame, speciesEntry, *db.getSpecies())
+    speciesDropdown = tk.OptionMenu(frame, speciesEntry, "Select Species", *db.getSpecies())
     speciesDropdown.config(bg="white", fg="black", font=("Arial", 12))
     speciesDropdown.place(relx=0.035, rely=0.29, width=500, height=30)
 

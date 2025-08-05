@@ -1,5 +1,6 @@
 import sqlite3
 import data
+import os
 # dbMethods.py
 # This module contains methods for database operations.
 
@@ -136,3 +137,33 @@ def create_tables(conn):
         print("Tables created successfully.")
     except sqlite3.Error as e:
         print(f"Error creating tables: {e}")
+
+def convertImageBlob(image_path):
+    """Convert image to blob for storing in database
+
+    Args:
+        image_path (str): the path to an image file
+
+    Returns:
+        anomalousBlob (bytes): img data become bytes
+    """
+    if not os.path.exists(image_path): 
+        raise FileNotFoundError(f"Image file {image_path} does not exist. :[")
+    
+    return (open(image_path, 'rb').read()) 
+
+def convertBlobImage(blob, output_path):
+    """Convert blob to image for retrieving from database
+
+    Args:
+        blob (bytes): the image data in bytes
+        output_path (str): the path to save the image file
+
+    Returns:
+        None
+    """
+    try:
+        open(output_path, 'wb').write(blob)
+    
+    except Exception as e:
+        print(f"Error writing blob to file: {e}")

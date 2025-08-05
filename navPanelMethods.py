@@ -27,7 +27,7 @@ def navGeneral(frame, mainFrame):
     addBug.config(bg = data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, anchor = "w", width=20, height=2)
     addBug.place(relx=0.035, rely=0.17)
 
-    bugList = tk.Button(frame, text="Bug List", command=lambda: print("Bug List Clicked"))
+    bugList = tk.Button(frame, text="Bug List", command=lambda: mainPanel.mainViewBugs(mainFrame))
     bugList.config(bg = data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, anchor = "w", width=20, height=2)
     bugList.place(relx=0.035, rely=0.24)
 

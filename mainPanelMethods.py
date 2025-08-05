@@ -85,6 +85,7 @@ def mainAddBug(frame):
     temperatureEntry.config(relief=tk.SUNKEN, bd=2, width=50)
     temperatureEntry.place(relx=0.035, rely=0.53, width=500, height=30)
 
+    speciesEntry.trace("w", lambda *args: speciesEntry.set(speciesEntry.get().replace("(", "").replace(")", "").replace("'", "").replace(",", "")))
     # Add Bug Button, uses method from dbMethods to add the bug
     addBugButton = tk.Button(frame, text="Add Bug", command=lambda: db.addBug(
         (

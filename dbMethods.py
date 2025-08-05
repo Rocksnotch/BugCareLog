@@ -1,25 +1,11 @@
 import sqlite3
 import data
 import os
+
 # dbMethods.py
 # This module contains methods for database operations.
 
 
-def printBugs():
-    """Print all bugs in the database.
-    """
-    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
-    if conn:
-        try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM bugs")
-            rows = cursor.fetchall()
-            for row in rows:
-                print(row)
-        except sqlite3.Error as e:
-            print(f"Error retrieving bugs: {e}")
-        finally:
-            close_connection(conn)
 
 def create_connection(dbFile):
     """Create a database connection to the SQLite database specified by dbFile.
@@ -102,6 +88,26 @@ def addBug(added):
             print(f"Error adding bug: {e}")
         finally:
             close_connection(conn)
+
+def getBugs():
+    """Retrieve all bugs from the database.
+
+    Returns:
+        list: A list of tuples containing bug data.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    bugs = []
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM bugs")
+            bugs = cursor.fetchall()
+            print("Bugs retrieved successfully.")
+        except sqlite3.Error as e:
+            print(f"Error retrieving bugs: {e}")
+        finally:
+            close_connection(conn)
+    return bugs
 
 def create_tables(conn):
     """Create necessary tables in the database.

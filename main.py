@@ -19,23 +19,6 @@ if __name__ == '__main__':
         # Close the database connection
         db.close_connection(connection)
 
-    test_image_path = "image.png"
-    test_output_path = "output_image.png"
-
-    # Convert image to blob
-    #try:
-        #blob = db.convertImageBlob(test_image_path)
-        #print(f"Image converted to blob, {len(blob)} bytes.")
-    #except Exception as e:
-        #print(f"Error: {e}")
-
-    # Convert blob back to image
-    #try:
-        #db.convertBlobImage(blob, test_output_path)
-        #print(f"Blob written back to {test_output_path}.")
-    #except Exception as e:
-        #print(f"Error: {e}")  #(#there #has #to #be #an #easier #way)
-
 # Initialize the main application window
 root = tk.Tk()
 root.title("My Bug Log")
@@ -56,6 +39,11 @@ nav.navGeneral(navFrame, mainFrame) # Initialize navigation panel to default sta
 
 # Initialize main panel
 mainPanel.mainPanelDefault(mainFrame)  # Initialize main panel to default state
+
+# print all bugs in the database
+bugs = db.getBugs()
+for bug in bugs:
+    print(bug)
 
 # Start the main event loop
 root.mainloop()

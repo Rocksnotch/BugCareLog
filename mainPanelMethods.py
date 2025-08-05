@@ -88,7 +88,7 @@ def mainAddBug(frame):
     speciesEntry.trace("w", lambda *args: speciesEntry.set(speciesEntry.get().replace("(", "").replace(")", "").replace("'", "").replace(",", "")))
     # Add Bug Button, uses method from dbMethods to add the bug
     addBugButton = tk.Button(frame, text="Add Bug", command=lambda: db.addBug(
-        (
+        ( 
             nicknameEntry.get(),
             dateAcquiredEntry.get(),
             speciesEntry.get(),
@@ -99,3 +99,32 @@ def mainAddBug(frame):
     ))
     addBugButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
     addBugButton.place(relx=0.035, rely=0.6)
+    
+def mainViewBugs(frame):
+    """Display the list of bugs in the database.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+    """
+    
+    for widget in frame.winfo_children():
+        widget.destroy()
+        
+    # Top Label
+    viewBugsLabel = tk.Label(frame, text="View Bugs", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
+    viewBugsLabel.place(relx=0.03, rely=0.05)
+
+    viewBugsTree = tk.ttk.Treeview(frame, columns=("Nickname", "Date Found", "Species"), show='headings')
+    viewBugsTree.heading("Nickname", text="Nickname")
+    viewBugsTree.column("Nickname", width=150)
+    viewBugsTree.heading("Date Found", text="Date Found")
+    viewBugsTree.column("Date Found", width=75)
+    viewBugsTree.heading("Species", text="Species")
+    viewBugsTree.column("Species", width=150)
+    
+    viewBugsTree.place(relx=0.035, rely=0.1, width=500, height=400)
+
+    bugs = db.getBugs()
+    for bug in bugs:
+        viewBugsTree.insert("", "end", values=(bug[1], bug[2], bug[3]))
+    

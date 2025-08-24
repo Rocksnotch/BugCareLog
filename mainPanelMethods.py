@@ -1,7 +1,7 @@
 import tkinter as tk
 import data
 import dbMethods as db
-from tkcalendar import Calendar, DateEntry 
+from tkcalendar import DateEntry 
 
 def mainPanelDefault(frame):
     """Handle default main panel display.

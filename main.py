@@ -40,10 +40,5 @@ nav.navGeneral(navFrame, mainFrame) # Initialize navigation panel to default sta
 # Initialize main panel
 mainPanel.mainPanelDefault(mainFrame)  # Initialize main panel to default state
 
-# print all bugs in the database
-bugs = db.getBugs()
-for bug in bugs:
-    print(bug)
-
 # Start the main event loop
 root.mainloop()

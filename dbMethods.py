@@ -69,6 +69,25 @@ def getSpecies():
             close_connection(conn)
     return species_names
 
+def deleteSpecies(species):
+    """Delete a species from the database.
+
+    Args:
+        species (str): The name of the species to delete.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    if conn:
+        try:
+            cursor = conn.cursor()
+            sql = '''DELETE FROM species WHERE species = ?'''
+            cursor.execute(sql, (species,))
+            conn.commit()
+            print("Species deleted successfully.")
+        except sqlite3.Error as e:
+            print(f"Error deleting species: {e}")
+        finally:
+            close_connection(conn)
+
 def addBug(added):
     """Add a new bug to the database.
 
@@ -108,6 +127,25 @@ def getBugs():
         finally:
             close_connection(conn)
     return bugs
+
+def deleteBug(nickname):
+    """Delete a bug from the database.
+
+    Args:
+        nickname (str): The nickname of the bug to delete.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    if conn:
+        try:
+            cursor = conn.cursor()
+            sql = '''DELETE FROM bugs WHERE nickname = ?'''
+            cursor.execute(sql, (nickname,))
+            conn.commit()
+            print("Bug deleted successfully.")
+        except sqlite3.Error as e:
+            print(f"Error deleting bug: {e}")
+        finally:
+            close_connection(conn)
 
 def create_tables(conn):
     """Create necessary tables in the database.

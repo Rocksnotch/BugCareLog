@@ -19,7 +19,7 @@ def navGeneral(frame, mainFrame):
     navLabel.place(relx=0.03, rely=0.05)
 
     # Buttons for main navigation
-    speciesDB = tk.Button(frame, text="Species DB", command=lambda: print("Species DB Clicked"))
+    speciesDB = tk.Button(frame, text="Species DB", command=lambda: mainPanel.mainSpeciesDB(mainFrame))
     speciesDB.config(bg = data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, anchor = "w", width=20, height=2)
     speciesDB.place(relx=0.035, rely=0.1)
 

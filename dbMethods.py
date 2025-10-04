@@ -60,7 +60,7 @@ def getSpecies():
     if conn:
         try:
             cursor = conn.cursor()
-            cursor.execute("SELECT species FROM species")
+            cursor.execute("SELECT * FROM species")
             species_names = cursor.fetchall()
             print("Species retrieved successfully.")
         except sqlite3.Error as e:
@@ -155,24 +155,30 @@ def create_tables(conn):
     """
     try:
         cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
         sqlTables = [
-            """CREATE TABLE IF NOT EXISTS species (
+            """CREATE TABLE species (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 species TEXT NOT NULL,
                 morph TEXT,
                 scientific_name TEXT NOT NULL,
                 image BLOB NOT NULL
             );""",
-
-            """CREATE TABLE IF NOT EXISTS bugs (
+            """CREATE TABLE bugs (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nickname TEXT NOT NULL,
                 date_found DATE NOT NULL,
                 species_name TEXT,
                 source TEXT NOT NULL,
                 humidity TEXT NOT NULL,
-                temperature TEXT NOT NULL,
-                FOREIGN KEY (species_name) REFERENCES species (species)
+                temperature TEXT NOT NULL
+            );""",
+            """CREATE TABLE notes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                bug_id INTEGER,
+                note TEXT NOT NULL,
+                date_added DATE NOT NULL,
+                FOREIGN KEY (bug_id) REFERENCES bugs (id) 
             );"""
         ]
         for sql in sqlTables:

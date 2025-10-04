@@ -1,7 +1,8 @@
 import tkinter as tk
 import data
 import dbMethods as db
-from tkcalendar import DateEntry 
+from tkcalendar import DateEntry
+import errorHandlePopup as errorPopup
 
 def mainPanelDefault(frame):
     """Handle default main panel display.
@@ -34,58 +35,48 @@ def mainAddBug(frame):
 
     # Top Label
     addBugLabel = tk.Label(frame, text="Add New Bug", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
-    addBugLabel.place(relx=0.03, rely=0.05)
 
     # Nickname Label and Entry
     nicknameLabel = tk.Label(frame, text="Nickname:", bg=data.Colors.MAIN.value , fg="black", font=("Arial", 12))
-    nicknameLabel.place(relx=0.03, rely=0.1)
+    
 
     nicknameEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
     nicknameEntry.config(relief=tk.SUNKEN, bd=2, width=50)
-    nicknameEntry.place(relx=0.035, rely=0.13, width=500, height=30)
 
     # Date Acquired Label and Entry
     dateAcquiredLabel = tk.Label(frame, text="Date Acquired:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
-    dateAcquiredLabel.place(relx=0.03, rely=0.18)
-
     dateAcquiredEntry = DateEntry(frame, bg="white", fg="black", font=("Arial", 12), date_pattern='yyyy-mm-dd')
-    dateAcquiredEntry.place(relx=0.035, rely=0.21, width=200, height=30)
 
     # Species Label and drop down selection list
     speciesLabel = tk.Label(frame, text="Species:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
-    speciesLabel.place(relx=0.03, rely=0.26)
 
     speciesEntry = tk.StringVar(frame)
     speciesEntry.set("Select Species")
-    speciesDropdown = tk.OptionMenu(frame, speciesEntry, "Select Species", *db.getSpecies())
-    speciesDropdown.config(bg="white", fg="black", font=("Arial", 12))
-    speciesDropdown.place(relx=0.035, rely=0.29, width=500, height=30)
-
+    try:
+        speciesDropdown = tk.OptionMenu(frame, speciesEntry, *[f"{specie[1]} ({specie[2]})" for specie in db.getSpecies()])
+        speciesDropdown.config(bg="white", fg="black", font=("Arial", 12))
+    except:
+        errorPopup.ErrorPopup("Error: Could not retrieve species from database. Please ensure the database is set up correctly and contains species data.")
+        return
     # Source Label and Entry
     sourceLabel = tk.Label(frame, text="Source:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
-    sourceLabel.place(relx=0.03, rely=0.34)
 
     sourceEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
     sourceEntry.config(relief=tk.SUNKEN, bd=2, width=50)
-    sourceEntry.place(relx=0.035, rely=0.37, width=500, height=30)
 
     # Humidity Label and Entry
     humidityLabel = tk.Label(frame, text="Humidity:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
-    humidityLabel.place(relx=0.03, rely=0.42)
 
     humidityEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
     humidityEntry.config(relief=tk.SUNKEN, bd=2, width=50)
-    humidityEntry.place(relx=0.035, rely=0.45, width=500, height=30)
 
     # Temperature Label and Entry
     temperatureLabel = tk.Label(frame, text="Temperature:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
-    temperatureLabel.place(relx=0.03, rely=0.5)
 
     temperatureEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
     temperatureEntry.config(relief=tk.SUNKEN, bd=2, width=50)
-    temperatureEntry.place(relx=0.035, rely=0.53, width=500, height=30)
 
-    speciesEntry.trace("w", lambda *args: speciesEntry.set(speciesEntry.get().replace("(", "").replace(")", "").replace("'", "").replace(",", "")))
+    speciesEntry.trace_add("write", lambda *args: speciesEntry.set(speciesEntry.get()))
     # Add Bug Button, uses method from dbMethods to add the bug
     addBugButton = tk.Button(frame, text="Add Bug", command=lambda: db.addBug(
         ( 
@@ -98,8 +89,23 @@ def mainAddBug(frame):
         )
     ))
     addBugButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
-    addBugButton.place(relx=0.035, rely=0.6)
     
+    # Place all here
+    addBugLabel.place(relx=0.03, rely=0.05)
+    nicknameLabel.place(relx=0.03, rely=0.1)
+    nicknameEntry.place(relx=0.035, rely=0.13, width=500, height=30)
+    dateAcquiredLabel.place(relx=0.03, rely=0.18)
+    dateAcquiredEntry.place(relx=0.035, rely=0.21, width=200, height=30)
+    speciesLabel.place(relx=0.03, rely=0.26)
+    speciesDropdown.place(relx=0.035, rely=0.29, width=500, height=30)
+    sourceLabel.place(relx=0.03, rely=0.34)
+    sourceEntry.place(relx=0.035, rely=0.37, width=500, height=30)
+    humidityLabel.place(relx=0.03, rely=0.42)
+    humidityEntry.place(relx=0.035, rely=0.45, width=500, height=30)
+    temperatureLabel.place(relx=0.03, rely=0.5)
+    temperatureEntry.place(relx=0.035, rely=0.53, width=500, height=30)
+    addBugButton.place(relx=0.03, rely=0.6)
+
 def mainViewBugs(frame):
     """Display the list of bugs in the database.
 
@@ -121,10 +127,54 @@ def mainViewBugs(frame):
     viewBugsTree.column("Date Found", width=75)
     viewBugsTree.heading("Species", text="Species")
     viewBugsTree.column("Species", width=150)
-    
-    viewBugsTree.place(relx=0.035, rely=0.1, width=500, height=400)
 
     bugs = db.getBugs()
     for bug in bugs:
+        print(bug)
         viewBugsTree.insert("", "end", values=(bug[1], bug[2], bug[3]))
     
+    viewBugsTree.place(relx=0.035, rely=0.1, width=500, height=400)
+
+def mainSpeciesDB(frame):
+    """Handle Species DB operation.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+    """
+
+    # Clear the frame
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+    # Top Label
+    speciesDBLabel = tk.Label(frame, text="Species Database", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
+
+    # Species Treeview
+    viewSpeciesTree = tk.ttk.Treeview(frame, columns=("Species", "Morph", "Scientific Name"), show='headings')
+    viewSpeciesTree.heading("Species", text="Species")
+    viewSpeciesTree.column("Species", width=150)
+    viewSpeciesTree.heading("Morph", text="Morph")
+    viewSpeciesTree.column("Morph", width=150)
+    viewSpeciesTree.heading("Scientific Name", text="Scientific Name")
+    viewSpeciesTree.column("Scientific Name", width=150)
+
+    # Populate the treeview with species data from the database
+    species = db.getSpecies()
+    for specie in species:
+        viewSpeciesTree.insert("", "end", values=(specie[1], specie[2], specie[3]))
+
+    # Add Species Button
+    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: print("Add Species Clicked"))
+    addSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
+    
+
+    # Delete Species Button
+    deleteSpeciesButton = tk.Button(frame, text="Delete Species", command=lambda: print("Delete Species Clicked"))
+    deleteSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
+    
+
+    viewSpeciesTree.place(relx=0.035, rely=0.1, width=500, height=400)
+    deleteSpeciesButton.place(relx=0.56, rely=0.6)
+    addSpeciesButton.place(relx=0.03, rely=0.6)
+    speciesDBLabel.place(relx=0.03, rely=0.05)
+

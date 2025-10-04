@@ -1,8 +1,25 @@
 import tkinter as tk
+from tkinter.filedialog import askopenfilename
 import data
 import dbMethods as db
 from tkcalendar import DateEntry
 import errorHandlePopup as errorPopup
+
+def browseImage(entry):
+    """Open a file dialog to select an image and update the entry with the selected file path.
+
+    Args:
+        entry (tk.Entry): The tkinter entry widget to update with the selected file path.
+    """
+    filename = askopenfilename(
+        title="Select Image",
+        filetypes=[("Image Files", "*.png;*.jpg;*.jpeg;"), ("All Files", "*.*")]
+    )
+    if filename:
+        entry.config(state='normal')  # Enable the entry to update its content
+        entry.delete(0, tk.END)  # Clear current content
+        entry.insert(0, filename)  # Insert the selected file path
+        entry.config(state='disabled')  # Disable the entry again to prevent user editing
 
 def mainPanelDefault(frame):
     """Handle default main panel display.
@@ -164,7 +181,7 @@ def mainSpeciesDB(frame):
         viewSpeciesTree.insert("", "end", values=(specie[1], specie[2], specie[3]))
 
     # Add Species Button
-    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: print("Add Species Clicked"))
+    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: addSpecies(frame))
     addSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
     
 
@@ -178,3 +195,72 @@ def mainSpeciesDB(frame):
     addSpeciesButton.place(relx=0.03, rely=0.6)
     speciesDBLabel.place(relx=0.03, rely=0.05)
 
+def addSpecies(frame):
+    """Handle Add Species operation.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+    """
+
+    # Clear the frame
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+    # Top Label
+    addSpeciesLabel = tk.Label(frame, text="Add New Species", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
+    
+
+    # Species Label and Entry
+    speciesLabel = tk.Label(frame, text="Species:", bg=data.Colors.MAIN.value , fg="black", font=("Arial", 12))
+
+    speciesEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
+    speciesEntry.config(relief=tk.SUNKEN, bd=2, width=50)
+
+    # Morph Label and Entry
+    morphLabel = tk.Label(frame, text="Morph:", bg=data.Colors.MAIN.value , fg="black", font=("Arial", 12))
+    
+
+    morphEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
+    morphEntry.config(relief=tk.SUNKEN, bd=2, width=50)
+    
+
+    # Scientific Name Label and Entry
+    scientificNameLabel = tk.Label(frame, text="Scientific Name:", bg=data.Colors.MAIN.value , fg="black", font=("Arial", 12))
+    
+
+    scientificNameEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
+    scientificNameEntry.config(relief=tk.SUNKEN, bd=2, width=50)
+    
+
+    # Image Label and Small Open File Button
+    imageLabel = tk.Label(frame, text="Thumbnail Image (200x100):", bg=data.Colors.MAIN.value , fg="black", font=("Arial", 12))
+
+    imageButton = tk.Button(frame, text="Browse", command=lambda: browseImage(imageLocationEntry))
+    imageButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2)
+
+    imageLocationEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
+    imageLocationEntry.config(relief=tk.SUNKEN, bd=2, width=50, state='disabled')
+
+    # Add Species Button
+    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: db.addSpecies((
+        speciesEntry.get(),
+        morphEntry.get(),
+        scientificNameEntry.get(),
+        db.convertImageBlob(imageLocationEntry.get())
+    )))
+    addSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
+    
+
+    #All places here
+    addSpeciesButton.place(relx=0.03, rely=0.5)
+    addSpeciesLabel.place(relx=0.03, rely=0.05)
+    imageButton.place(relx=0.035, rely=0.37, width=500, height=30)
+    scientificNameEntry.place(relx=0.035, rely=0.29, width=500, height=30)
+    imageLabel.place(relx=0.03, rely=0.34)
+    morphEntry.place(relx=0.035, rely=0.21, width=500, height=30)
+    morphLabel.place(relx=0.03, rely=0.18)
+    scientificNameLabel.place(relx=0.03, rely=0.26)
+    speciesEntry.place(relx=0.035, rely=0.13, width=500, height=30)
+    speciesLabel.place(relx=0.03, rely=0.1)
+    addSpeciesLabel.place(relx=0.03, rely=0.05)
+    imageLocationEntry.place(relx=0.035, rely=0.42, width=400, height=30)

@@ -1,6 +1,7 @@
 import sqlite3
 import data
 import os
+import errorHandlePopup
 
 # dbMethods.py
 # This module contains methods for database operations.
@@ -94,6 +95,12 @@ def addBug(added):
     Args:
         added (tuple): A tuple containing bug data (date_found, species_name, source, humidity, temperature).
     """
+
+    for i in range(len(added)):
+        if added[i] == "":
+            errorHandlePopup.ErrorPopup("All fields must be filled out.")
+            return
+
     conn = create_connection(data.UserLocalAppdata.DBFILE.value)
     if conn:
         try:

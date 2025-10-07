@@ -98,8 +98,8 @@ def addBug(added):
     if conn:
         try:
             cursor = conn.cursor()
-            sql = '''INSERT INTO bugs(nickname, date_found, species_name, source, humidity, temperature)
-                     VALUES(?, ?, ?, ?, ?, ?)'''
+            sql = '''INSERT INTO bugs(nickname, date_found, species_name, source, humidity, temperature, seen_owned)
+                     VALUES(?, ?, ?, ?, ?, ?, ?)'''
             cursor.execute(sql, added)
             conn.commit()
             print("Bug added successfully.")
@@ -171,7 +171,8 @@ def create_tables(conn):
                 species_name TEXT,
                 source TEXT NOT NULL,
                 humidity TEXT NOT NULL,
-                temperature TEXT NOT NULL
+                temperature TEXT NOT NULL,
+                seen_owned INTEGER NOT NULL
             );""",
             """CREATE TABLE notes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

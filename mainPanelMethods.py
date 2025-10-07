@@ -93,6 +93,12 @@ def mainAddBug(frame):
     temperatureEntry = tk.Entry(frame, bg="white", fg="black", font=("Arial", 12))
     temperatureEntry.config(relief=tk.SUNKEN, bd=2, width=50)
 
+    # Radio buttons to select either Seen or Owned, default to Seen
+    seenOwnedChoice = tk.IntVar()
+    seenRadioButton = tk.Radiobutton(frame, text="Seen", variable=seenOwnedChoice, value=0, bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
+    ownedRadioButton = tk.Radiobutton(frame, text="Owned", variable=seenOwnedChoice, value=1, bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
+    seenRadioButton.select()
+
     speciesEntry.trace_add("write", lambda *args: speciesEntry.set(speciesEntry.get()))
     # Add Bug Button, uses method from dbMethods to add the bug
     addBugButton = tk.Button(frame, text="Add Bug", command=lambda: db.addBug(
@@ -102,7 +108,8 @@ def mainAddBug(frame):
             speciesEntry.get(),
             sourceEntry.get(),
             humidityEntry.get(),
-            temperatureEntry.get()
+            temperatureEntry.get(),
+            seenOwnedChoice.get()
         )
     ))
     addBugButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
@@ -121,7 +128,9 @@ def mainAddBug(frame):
     humidityEntry.place(relx=0.035, rely=0.45, width=500, height=30)
     temperatureLabel.place(relx=0.03, rely=0.5)
     temperatureEntry.place(relx=0.035, rely=0.53, width=500, height=30)
-    addBugButton.place(relx=0.03, rely=0.6)
+    seenRadioButton.place(relx=0.03, rely=0.57)
+    ownedRadioButton.place(relx=0.15, rely=0.57)
+    addBugButton.place(relx=0.03, rely=0.63)
 
 def mainViewBugs(frame):
     """Display the list of bugs in the database.
@@ -137,19 +146,26 @@ def mainViewBugs(frame):
     viewBugsLabel = tk.Label(frame, text="View Bugs", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
     viewBugsLabel.place(relx=0.03, rely=0.05)
 
-    viewBugsTree = tk.ttk.Treeview(frame, columns=("Nickname", "Date Found", "Species"), show='headings')
+    viewBugsTree = tk.ttk.Treeview(frame, columns=("Nickname", "Date Found", "Species", "Seen/Owned"), show='headings')
     viewBugsTree.heading("Nickname", text="Nickname")
     viewBugsTree.column("Nickname", width=150)
     viewBugsTree.heading("Date Found", text="Date Found")
     viewBugsTree.column("Date Found", width=75)
     viewBugsTree.heading("Species", text="Species")
     viewBugsTree.column("Species", width=150)
+    viewBugsTree.heading("Seen/Owned", text="Seen/Owned")
+    viewBugsTree.column("Seen/Owned", width=75)
 
     bugs = db.getBugs()
     for bug in bugs:
         print(bug)
-        viewBugsTree.insert("", "end", values=(bug[1], bug[2], bug[3]))
-    
+        if bug[7] == 0:
+            bugSeenOwned = "Seen"
+        else:
+            bugSeenOwned = "Owned"
+
+        viewBugsTree.insert("", "end", values=(bug[1], bug[2], bug[3], bugSeenOwned))
+
     viewBugsTree.place(relx=0.035, rely=0.1, width=500, height=400)
 
 def mainSpeciesDB(frame):

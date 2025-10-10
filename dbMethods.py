@@ -1,7 +1,7 @@
 import sqlite3
 import data
 import os
-import errorHandlePopup
+import PopupHandler
 
 # dbMethods.py
 # This module contains methods for database operations.
@@ -40,13 +40,20 @@ def addSpecies(species):
     if conn:
         try:
             cursor = conn.cursor()
+
+            # Check if species with same name and morph already exists
+            cursor.execute("SELECT * FROM species WHERE species = ? AND morph = ?", (species[0], species[1]))
+            if cursor.fetchone():
+                PopupHandler.ErrorPopup("Species with the same name and morph already exists.")
+                return
+
             sql = '''INSERT INTO species(species, morph, scientific_name, image)
                      VALUES(?, ?, ?, ?)'''
             cursor.execute(sql, species)
             conn.commit()
-            print("Species added successfully.")
+            PopupHandler.SuccessPopup("Species added successfully.")
         except sqlite3.Error as e:
-            print(f"Error adding species: {e}")
+            PopupHandler.ErrorPopup(f"Error adding species: {e}")
         finally:
             close_connection(conn)
 
@@ -70,18 +77,19 @@ def getSpecies():
             close_connection(conn)
     return species_names
 
-def deleteSpecies(species):
+def deleteSpecies(species, morph):
     """Delete a species from the database.
 
     Args:
         species (str): The name of the species to delete.
+        morph (str): The morph of the species to delete.
     """
     conn = create_connection(data.UserLocalAppdata.DBFILE.value)
     if conn:
         try:
             cursor = conn.cursor()
-            sql = '''DELETE FROM species WHERE species = ?'''
-            cursor.execute(sql, (species,))
+            sql = '''DELETE FROM species WHERE species = ? AND morph = ?'''
+            cursor.execute(sql, (species, morph))
             conn.commit()
             print("Species deleted successfully.")
         except sqlite3.Error as e:
@@ -98,7 +106,7 @@ def addBug(added):
 
     for i in range(len(added)):
         if added[i] == "":
-            errorHandlePopup.ErrorPopup("All fields must be filled out.")
+            PopupHandler.ErrorPopup("All fields must be filled out.")
             return
 
     conn = create_connection(data.UserLocalAppdata.DBFILE.value)

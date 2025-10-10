@@ -3,7 +3,7 @@ from tkinter.filedialog import askopenfilename
 import data
 import dbMethods as db
 from tkcalendar import DateEntry
-import errorHandlePopup as errorPopup
+import PopupHandler
 
 def browseImage(entry):
     """Open a file dialog to select an image and update the entry with the selected file path.
@@ -20,6 +20,29 @@ def browseImage(entry):
         entry.delete(0, tk.END)  # Clear current content
         entry.insert(0, filename)  # Insert the selected file path
         entry.config(state='disabled')  # Disable the entry again to prevent user editing
+
+def handleSpeciesDeletion(frame, tree):
+    """Handle the deletion of a species from the database.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+        tree (tk.ttk.Treeview): The treeview widget containing the species list.
+    """
+
+    selected_item = tree.selection()
+    if not selected_item:
+        PopupHandler.ErrorPopup("Error: No species selected. Please select a species to delete.")
+        return
+    species_name = tree.item(selected_item)['values'][0]
+    morph = tree.item(selected_item)['values'][1]
+    try:
+        PopupHandler.YesNoPopup(
+            f"Are you sure you want to delete the species '{species_name}' with morph '{morph}'? This action cannot be undone.",
+            yes_callback=lambda: [db.deleteSpecies(species_name, morph), mainSpeciesDB(frame), PopupHandler.SuccessPopup(f"Species '{species_name}' with morph '{morph}' deleted successfully.")],
+            no_callback=lambda: None
+        )
+    except Exception as e:
+        PopupHandler.ErrorPopup(f"Error: {str(e)}")
 
 def mainPanelDefault(frame):
     """Handle default main panel display.
@@ -73,7 +96,7 @@ def mainAddBug(frame):
         speciesDropdown = tk.OptionMenu(frame, speciesEntry, *[f"{specie[1]} ({specie[2]})" for specie in db.getSpecies()])
         speciesDropdown.config(bg="white", fg="black", font=("Arial", 12))
     except:
-        errorPopup.ErrorPopup("Error: Could not retrieve species from database. Please ensure the database is set up correctly and contains species data.")
+        PopupHandler.ErrorPopup("Error: Could not retrieve species from database. Please ensure the database is set up correctly and contains species data.")
         return
     # Source Label and Entry
     sourceLabel = tk.Label(frame, text="Source:", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 12))
@@ -199,10 +222,8 @@ def mainSpeciesDB(frame):
     # Add Species Button
     addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: addSpecies(frame))
     addSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
-    
 
-    # Delete Species Button
-    deleteSpeciesButton = tk.Button(frame, text="Delete Species", command=lambda: print("Delete Species Clicked"))
+    deleteSpeciesButton = tk.Button(frame, text="Delete Species", command=lambda: handleSpeciesDeletion(frame, viewSpeciesTree))
     deleteSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
     
 

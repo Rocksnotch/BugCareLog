@@ -101,7 +101,7 @@ def addBug(added):
     """Add a new bug to the database.
 
     Args:
-        added (tuple): A tuple containing bug data (date_found, species_name, source, humidity, temperature).
+        added (tuple): A tuple containing bug data (date_found, species, morph, source, humidity, temperature).
     """
 
     for i in range(len(added)):
@@ -113,7 +113,7 @@ def addBug(added):
     if conn:
         try:
             cursor = conn.cursor()
-            sql = '''INSERT INTO bugs(nickname, date_found, species_name, source, humidity, temperature, seen_owned)
+            sql = '''INSERT INTO bugs(nickname, date_found, species, morph, source, humidity, temperature, seen_owned)
                      VALUES(?, ?, ?, ?, ?, ?, ?)'''
             cursor.execute(sql, added)
             conn.commit()
@@ -205,11 +205,13 @@ def create_tables(conn):
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nickname TEXT NOT NULL,
                 date_found DATE NOT NULL,
-                species_name TEXT,
+                species TEXT NOT NULL,
+                morph TEXT,
                 source TEXT NOT NULL,
                 humidity TEXT NOT NULL,
                 temperature TEXT NOT NULL,
                 seen_owned INTEGER NOT NULL
+                image BLOB
             );""",
             """CREATE TABLE notes (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

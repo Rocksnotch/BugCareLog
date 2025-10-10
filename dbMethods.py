@@ -143,6 +143,28 @@ def getBugs():
             close_connection(conn)
     return bugs
 
+def getBugByNickname(nickname):
+    """Retrieve a bug by its nickname.
+
+    Args:
+        nickname (str): The nickname of the bug to retrieve.
+
+    Returns:
+        tuple: A tuple containing the bug data.
+    """
+    conn = create_connection(data.UserLocalAppdata.DBFILE.value)
+    bug = None
+    if conn:
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM bugs WHERE nickname = ?", (nickname,))
+            bug = cursor.fetchone()
+        except sqlite3.Error as e:
+            PopupHandler.ErrorPopup(f"Error retrieving bug: {e}")
+        finally:
+            close_connection(conn)
+    return bug
+
 def deleteBug(nickname):
     """Delete a bug from the database.
 
@@ -214,8 +236,7 @@ def convertImageBlob(image_path):
         anomalousBlob (bytes): img data become bytes
     """
     if not os.path.exists(image_path): 
-        raise FileNotFoundError(f"Image file {image_path} does not exist. :[")
-    
+        return None
     return (open(image_path, 'rb').read()) 
 
 def convertBlobImage(blob, output_path):

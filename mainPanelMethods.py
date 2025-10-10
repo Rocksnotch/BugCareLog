@@ -44,6 +44,31 @@ def handleSpeciesDeletion(frame, tree):
     except Exception as e:
         PopupHandler.ErrorPopup(f"Error: {str(e)}")
 
+def handleSpeciesAddition(frame, species, morph, scientific_name, image_path):
+    """Handle the addition of a new species to the database.
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+        species (str): The name of the species to add.
+        morph (str): The morph of the species to add.
+        scientific_name (str): The scientific name of the species to add.
+        image_path (str): The file path of the species image to add.
+    """
+    if not species:
+        PopupHandler.ErrorPopup("Error: Species name is required.")
+        return
+    if not scientific_name:
+        PopupHandler.ErrorPopup("Error: Scientific name is required.")
+        return
+    if not image_path or db.convertImageBlob(image_path) is None:
+        PopupHandler.ErrorPopup("Error: Valid image file is required.")
+        return
+
+    try:
+        db.addSpecies((species, morph, scientific_name, db.convertImageBlob(image_path)))
+        mainSpeciesDB(frame)
+    except Exception as e:
+        PopupHandler.ErrorPopup(f"Error: {str(e)}")
+
 def mainPanelDefault(frame):
     """Handle default main panel display.
 
@@ -181,7 +206,6 @@ def mainViewBugs(frame):
 
     bugs = db.getBugs()
     for bug in bugs:
-        print(bug)
         if bug[7] == 0:
             bugSeenOwned = "Seen"
         else:
@@ -189,7 +213,11 @@ def mainViewBugs(frame):
 
         viewBugsTree.insert("", "end", values=(bug[1], bug[2], bug[3], bugSeenOwned))
 
+    selectBugButton = tk.Button(frame, text="View Selected Bug", command=lambda: mainSelectedBug(frame, viewBugsTree.item(viewBugsTree.selection())['values'][0] if viewBugsTree.selection() else None))
+    selectBugButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
+
     viewBugsTree.place(relx=0.035, rely=0.1, width=500, height=400)
+    selectBugButton.place(relx=0.03, rely=0.605)
 
 def mainSpeciesDB(frame):
     """Handle Species DB operation.
@@ -279,12 +307,8 @@ def addSpecies(frame):
     imageLocationEntry.config(relief=tk.SUNKEN, bd=2, width=50, state='disabled')
 
     # Add Species Button
-    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: db.addSpecies((
-        speciesEntry.get(),
-        morphEntry.get(),
-        scientificNameEntry.get(),
-        db.convertImageBlob(imageLocationEntry.get())
-    )))
+    addSpeciesButton = tk.Button(frame, text="Add Species", command=lambda: handleSpeciesAddition(
+        frame, speciesEntry.get(), morphEntry.get(), scientificNameEntry.get(), imageLocationEntry.get()))
     addSpeciesButton.config(bg=data.Colors.NAVBUTTONS.value, fg="black", font=("Arial", 12), relief=tk.RAISED, bd=2, width=20, height=2)
     
 
@@ -301,3 +325,31 @@ def addSpecies(frame):
     speciesLabel.place(relx=0.03, rely=0.1)
     addSpeciesLabel.place(relx=0.03, rely=0.05)
     imageLocationEntry.place(relx=0.035, rely=0.42, width=400, height=30)
+
+def mainSelectedBug(frame, nickname):
+    """Display detailed information about a selected bug.
+
+    Args:
+        frame (tk.Frame): The tkinter frame to display the main panel.
+        nickname (str): The nickname of the selected bug.
+    """
+
+    if not nickname:
+        PopupHandler.ErrorPopup("Error: No bug selected. Please select a bug to view details.")
+        return
+
+
+    # Clear the frame
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+    # Top Label
+    viewBugsLabel = tk.Label(frame, text="View Bugs", bg=data.Colors.MAIN.value, fg="black", font=("Arial", 16, 'bold'))
+    viewBugsLabel.place(relx=0.03, rely=0.05)
+
+    # Fetch bug details from the database
+    bug = db.getBugByNickname(nickname)
+
+    
+
+    
